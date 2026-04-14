@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaBot Marine Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <div class="radar-dot"></div>
+                <h1>AquaBot Explorer</h1>
+            </div>
+            <div class="controls">
+                <select id="sensor-select">
+                    <option value="water_temp_c">Water Temperature (°C)</option>
+                    <option value="dissolved_oxygen_mgl">Dissolved Oxygen (mg/L)</option>
+                    <option value="ph">pH Level</option>
+                    <option value="turbidity_ntu">Turbidity (NTU)</option>
+                    <option value="salinity_ppt">Salinity (ppt)</option>
+                    <option value="depth_m">Depth (m)</option>
+                    <option value="battery_pct">Battery (%)</option>
+                </select>
+                <input type="datetime-local" id="start-time">
+                <input type="datetime-local" id="end-time">
+                <button id="update-btn">Apply Window</button>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <div class="main-panel card">
+                <div id="chart-container"></div>
+            </div>
+            <div class="side-panel">
+                <div class="card summary-card">
+                    <h3>Dataset Overview</h3>
+                    <div class="stat-grid">
+                        <div class="stat-box">
+                            <span class="label">Total Readings</span>
+                            <span class="value" id="tot-readings">--</span>
+                        </div>
+                        <div class="stat-box danger">
+                            <span class="label">Total Anomalies</span>
+                            <span class="value" id="tot-anomalies">--</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card anomaly-list-card">
+                    <h3>Recent Anomalies</h3>
+                    <ul id="anomaly-list" class="anomaly-list">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>
