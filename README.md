@@ -41,11 +41,11 @@ The application focuses on simplicity, responsiveness, and minimal overhead for 
 
 The pipeline cleans structural timestamp errors on instantiation, before applying the following dual-layered anomaly detection logic:
 
-### 1. Range Validation (Hard Physical Constraint Check)
-- **What it does**: Cross-references telemetry bounds against standard marine physical constants (e.g., Turbidity cannot be negative; Dissolved Oxygen generally sits between 4.0 - 12.0 mg/L).
+### 1. Range Validation
+- **What it does**: Cross-check telemetry bounds against standard marine physical constants (e.g., Turbidity cannot be negative; Dissolved Oxygen generally sits between 4.0 - 12.0 mg/L).
 - **Why we chose this**: Some errors are catastrophic hardware faults where sensors report nonsensical extreme values. Hard constraint checking prevents downstream processing from being biased by mathematically impossible data points.
 
-### 2. Rolling Window Z-Score (Contextual Distribution Check)
+### 2. Rolling Window Z-Score
 - **What it does**: Computes local moving averages and standard deviations over a specific window of observation (e.g., 6 contiguous readings or ~1 hour). Data points exceeding a threshold `Z-Score` factor (typically `> 3.2`) are flagged as anomalous spikes/drops.
 - **Why we chose this**: Often, sensors fail 'quietly'. For example, an unexpected sudden change from `pH 8.1` to `pH 7.6` in a span of 10 minutes is completely valid locally within the context of physical minimums, but mathematically highly suspicious compared to the localized surrounding rolling window. The rolling Z-Score handles sudden shifts perfectly.
 
@@ -55,11 +55,3 @@ The pipeline cleans structural timestamp errors on instantiation, before applyin
 
 If scaling this system to handle multi-year autonomous deployments or extremely high-frequency readings, here is the immediate roadmap:
 
-*   **Edge vs. Cloud Processing**: 
-    If AquaBots communicate through constrained and expensive satellite bandwidth, anomaly inference must happen on the **edge** (e.g., Raspberry Pi or Jetson on the bot). We would deploy lightweight versions of the anomaly service locally. Valid streams get compressed, whereas identified anomalies are transmitted immediately.
-*   **Database Scalability**: 
-    Currently, data lives in-memory via Pandas `df.read_csv`, which is an acceptable practice for smaller logs. At scale, this layer must be refactored to utilize a Time-Series Database (TSDB) like `InfluxDB` or `TimescaleDB` configured alongside streaming infrastructure like `Apache Kafka`.
-*   **Sensor Calibration Calibration Drift**:
-    Over multiple weeks, sensors invariably drift as biological slime (biofouling) disrupts standard readings. Instead of static Z-score algorithms, the ultimate solution involves training **LSTMs or specialized unsupervised AutoEncoders** designed to recognize and filter slow baseline drift independently from actionable environmental anomalies.
-*   **Production Real-time Alerting**:
-    Hook anomaly detection flags straight into an event queue. We would add an alerting microservice executing Webhooks pointing to Slack, PagerDuty, or SMS to notify on-call survey scientists instantly.
