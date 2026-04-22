@@ -7,7 +7,7 @@ This pipeline aims to parse the corrupted data reliably, highlight out-of-bounds
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 Ensure you have Python 3.9+ installed.
 
@@ -26,7 +26,7 @@ Ensure you have Python 3.9+ installed.
 
 ---
 
-## 🏗️ Project Architecture
+## Project Architecture
 
 The application focuses on simplicity, responsiveness, and minimal overhead for ease of deployment.
 
@@ -37,7 +37,7 @@ The application focuses on simplicity, responsiveness, and minimal overhead for 
 
 ---
 
-## 🧠 Anomaly Detection Strategies
+## Anomaly Detection Strategies
 
 The pipeline cleans structural timestamp errors on instantiation, before applying the following dual-layered anomaly detection logic:
 
@@ -51,7 +51,7 @@ The pipeline cleans structural timestamp errors on instantiation, before applyin
 
 ---
 
-## 🔭 Discussion & Future Improvements
+## Discussion & Future Improvements
 
 If scaling this system to handle multi-year autonomous deployments or extremely high-frequency readings, and moving towards production, here is the immediate roadmap:
 
