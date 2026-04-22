@@ -53,5 +53,24 @@ The pipeline cleans structural timestamp errors on instantiation, before applyin
 
 ## 🔭 Discussion & Future Improvements
 
-If scaling this system to handle multi-year autonomous deployments or extremely high-frequency readings, here is the immediate roadmap:
+If scaling this system to handle multi-year autonomous deployments or extremely high-frequency readings, and moving towards production, here is the immediate roadmap:
 
+### 1. Scaling for High-Frequency Data
+To handle years of high-frequency data (e.g., readings every second), we would transition from an in-memory Pandas dataframe to a dedicated time-series database (TSDB) like **InfluxDB** or **TimescaleDB**. The data ingestion could be decoupled using a message broker (like Apache Kafka, MQTT or RabbitMQ) to buffer incoming sensor streams, and anomaly detection could run asynchronously via distributed workers to prevent blocking the ingestion pipeline.
+
+### 2. Edge Processing vs. Cloud Processing
+Running anomaly detection on the edge (e.g., Raspberry Pi on the AquaBot) vs. the cloud involves distinct tradeoffs:
+- **Edge Processing**: Reduces telemetry bandwidth and enables real-time autonomous reaction (e.g., surfacing if critical sensors fail). However, onboard compute is limited, power consumption increases, and updating models requires over-the-air updates.
+- **Cloud Processing**: Offers vast compute for complex machine learning models, easier system updates, and holistic analysis across an entire bot fleet. The downside is reliance on potentially spotty marine data connections.
+- **Ideal Setup**: A hybrid approach. The edge runs lightweight checks (like Range Validation) to trigger immediate safety alerts or discard clearly corrupted packets, while the cloud runs the intensive rolling historical checks and deep learning models.
+
+### 3. Handling Sensor Calibration Drift
+Sensor drift is tricky because readings remain physically valid but slowly lose accuracy. To tackle this, we could:
+- **Baseline Drift Compensation**: Use long-term moving averages (over weeks instead of hours) to detect slow, steady monotonic trends that do not correlate with natural cyclical patterns.
+- **Redundant Sensor Voting**: Compare readings with secondary on-board sensors. If the primary optical DO sensor shows a slow decline while the galvanic DO sensor is stable, flag as probable drift.
+
+### 4. Production Alerting System
+For a true production alerting system, passive logging isn't enough:
+- **Alert Triage/Debouncing**: Implement a rule-engine to prevent notification spam. A single anomaly might just be logged, but 5 consecutive anomalies within 10 minutes escalates to an alert.
+- **Push Notifications & Webhooks**: Dispatch critical severity alerts to Slack, Microsoft Teams, or PagerDuty for on-call researchers. 
+- **Live UI Updates**: Transition the dashboard to Server-Sent Events (SSE) or WebSockets to display notifications instantly as data streams in.
